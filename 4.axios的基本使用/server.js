@@ -31,7 +31,7 @@ app.get('/get_person_byid',(req,res)=>{
 })
 
 //添加一个人-----参数：name,age	-----参数类型：请求体参数
-app.post('/add_person',(req,res)=>{
+app.post('/person',(req,res)=>{
 	const {name,age} = req.body
 	if(!name || !age){
 		res.send({status:1,msg:'添加失败，名字和年龄均不能为空'})
