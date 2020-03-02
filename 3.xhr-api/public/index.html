@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<button id="btn">点我获取所有人</button>
+	<script type="text/javascript" >
+
+		let btn = document.getElementById('btn')
+		btn.onclick = ()=>{
+			//实例化xhr
+			let xhr = new XMLHttpRequest()
+			//绑定监听
+			xhr.onreadystatechange = ()=>{
+				if(xhr.readyState === 4 && xhr.status === 200){
+					console.log(xhr.response);
+				}
+			}
+			//调用open
+			xhr.open('get','http://localhost:3000/get_persons')
+			//发送请求
+			xhr.send()
+		}
+	</script>
+	
+</body>
+</html>
