@@ -15,14 +15,17 @@
 	const {CancelToken,isCancel} = axios
 	let cancel
 
+	//请求拦截器
 	axios.interceptors.request.use((config)=>{
-		if(cancel) {
-			console.log('拦截器的回调');
-			cancel('用户不想要了')
-		}
+		if(cancel) cancel('用户不想要了')
+		config.cancelToken = new CancelToken((c)=>{
+			//c() //c是一个函数，由axios底层传递过来的，用于取消本次请求。
+			cancel = c
+		})
 		return config
 	})
 
+ //响应拦截器
 	axios.interceptors.response.use(
 		response => response.data,
 		error => {
@@ -39,11 +42,6 @@
 		axios({
 			url:'http://localhost:3000/get_data1',
 			method:'get',
-			cancelToken:new CancelToken((c)=>{
-				console.log('CancelToken的回调');
-				//c() //c是一个函数，由axios底层传递过来的，用于取消本次请求。
-				cancel = c
-			})
 		}).then(
 			response => {console.log('获取所有人成功1',response);},
 		)
@@ -52,10 +50,6 @@
 		axios({
 			url:'http://localhost:3000/get_data2',
 			method:'get',
-			cancelToken:new CancelToken((c)=>{
-				//c() //c是一个函数，由axios底层传递过来的，用于取消本次请求。
-				cancel = c
-			})
 		}).then(
 			response => {console.log('获取所有人成功2',response);},
 		)
