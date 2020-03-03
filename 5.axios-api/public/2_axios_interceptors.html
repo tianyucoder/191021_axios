@@ -29,18 +29,31 @@
 
 	let btn1 = document.getElementById('btn1')
 	//请求的基本路径
-	axios.default.baseURL = 'http://localhost:3000'
+	axios.defaults.baseURL = 'http://localhost:3000'
+
 	//配置一个请求拦截器，请求拦截器本质就是一个函数，会在请求发送之前调用
 	axios.interceptors.request.use((config)=>{
 		console.log('请求拦截器函数被调用了');
 		return config
 	})
 
-	btn1.onclick = ()=>{
-		axios.get('/get_persons').then(
-			response => {console.log(response.data);},
-			error => {console.log(error.message);}
-		)
+	//配置一个响应拦截器,响应拦截器本质就是函数，会在数据回来后立刻调用，随后再交给响应函数。
+	axios.interceptors.response.use(
+		(response)=>{ //若响应成功(若状态码是2开头)，执行该函数
+			console.log('响应拦截器成功的回调执行了',response)
+			return response.data
+		},
+		(error)=>{//若响应失败(若状态码是非2开头)，执行该函数
+			//console.log('响应拦截器失败的回调执行了',error)
+			alert(error.message)
+			//return Promise.reject(error.message)
+			return new Promise(()=>{}) //返回一个状态为pending的Promise实例。
+		} 
+	)
+
+	btn1.onclick = async()=>{
+		let result = await axios.get('/get_persons')
+		console.log(result);
 	}
 	
 
