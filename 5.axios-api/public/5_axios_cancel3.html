@@ -7,10 +7,59 @@
 <body>
 	<script type="text/javascript" src="./js/axios.min.js"></script>
 
-	<button onclick="fun1()">点我获取数据1</button><br><br>
-	<button onclick="fun2()">点我获取数据2</button><br><br>
+	<button onclick="getData1()">点我获取数据1</button><br><br>
+	<button onclick="getData2()">点我获取数据2</button><br><br>
 
 	<script type="text/javascript">
+
+	const {CancelToken,isCancel} = axios
+	let cancel
+
+	axios.interceptors.request.use((config)=>{
+		if(cancel) {
+			console.log('拦截器的回调');
+			cancel('用户不想要了')
+		}
+		return config
+	})
+
+	axios.interceptors.response.use(
+		response => response.data,
+		error => {
+			if(isCancel(error)){
+				console.log('用户取消了请求，取消的原因是',error.message);
+			}else{
+				console.log('请求出错，出错的原因是：',error.message);
+			}
+			return new Promise(()=>{})
+		}
+	)
+
+	function getData1(){
+		axios({
+			url:'http://localhost:3000/get_data1',
+			method:'get',
+			cancelToken:new CancelToken((c)=>{
+				console.log('CancelToken的回调');
+				//c() //c是一个函数，由axios底层传递过来的，用于取消本次请求。
+				cancel = c
+			})
+		}).then(
+			response => {console.log('获取所有人成功1',response);},
+		)
+	}
+	function getData2(){
+		axios({
+			url:'http://localhost:3000/get_data2',
+			method:'get',
+			cancelToken:new CancelToken((c)=>{
+				//c() //c是一个函数，由axios底层传递过来的，用于取消本次请求。
+				cancel = c
+			})
+		}).then(
+			response => {console.log('获取所有人成功2',response);},
+		)
+	}
 
 	</script>
 
